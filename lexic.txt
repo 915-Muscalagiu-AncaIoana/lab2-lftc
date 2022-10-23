@@ -1,0 +1,39 @@
+Alphabet: a. Upper (A-Z) and lower case letters (a-z) of the English alphabet 
+                 b. Dollar sign ‘$’; 
+                 c. Decimal digits (0-9);
+
+1. Lexic: 
+a.Special symbols, representing: 
+- operators + - * / % := < <= == >= >  
+- separators [ ] { } : ; space 
+- reserved words: And or Decl Int Char const Cond Print Read Repeat Stop Otherwise Length true false bool string
+
+b.identifiers -a sequence of letters and digits, such that the first character is $, then followed by a letter and a sequence of letters or digits., the rule is: 
+
+<identifier> ::= $<letter> | $<letter><seq>
+<seq> ::= <character> | <seq><character>
+<smallletter> ::= A | B  | . ..| Z 
+<bigletter> ::= a | b  | . ..|  z
+<letter>::= <smallletter> | <bigletter>
+<digit> ::= 0 | 1 |...| 9
+<character> ::= <letter> | <digit> 
+
+c.constants 
+1.integer - rule: 
+<nonzerodigit> ::= 1 | 2 .. | 9
+<digit> ::= 0 | <nonzerodigit>
+<sign ::= - | +
+<no> ::= <nonnzerodigit> | <nonzerodigit><digit_seq>
+<digit_seq> ::= <digit> | <digit> <digit_seq>
+<integer> = 0 | <sign> <no>
+
+2.character 
+<character>:=‘<letter>’|’<digit>’ 
+
+3.string
+<string>:=“<char_seq>” 
+<char_seq>:=<char>|<char><char_seq> 
+<char>:=<letter>|<digit>
+
+4. Boolean
+<bool> := true | false  
