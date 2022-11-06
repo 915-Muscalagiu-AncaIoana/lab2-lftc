@@ -1,0 +1,21 @@
+decl int $a := 10 ;
+decl int $b := 5 ;
+decl int $c := 6 ;
+decl int $max ;
+
+cond [ $a >= $b and  $a >= $c   ]
+{
+  $max := $a ;
+}
+
+cond [ $b >= $c and  $b >= $a   ]
+{
+  $max := $b ;
+}
+
+cond [ $c >= $a and  $c >= $b   ]
+{
+  $max := $c ;
+}
+
+print [ $max ]

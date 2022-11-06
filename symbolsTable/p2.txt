@@ -1,0 +1,14 @@
+decl int $a := 10 ;
+decl int $div := 2 ;
+
+repeat [  $div <= $a ]
+{
+ cond [  $a % $div == 0 ]
+  {
+     print [ "notprime" ]
+      stop ;
+  }
+$div := $div + 1
+}
+
+print [  "prime" ]

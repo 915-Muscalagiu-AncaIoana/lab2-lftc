@@ -1,0 +1,75 @@
+Link to Github repo: https://github.com/915-Muscalagiu-AncaIoana/lab2-lftc
+Branch : lab-3
+
+Documentation
+
+Class: Pair
+- class which groups two generic objects, a key and a value
+
+Class: SymbolsTable
+- class which is responsible for keeping the constant or identifier tokens found by the scanner. It implements the hash table data structure with separate
+chaining collision handling technique,
+the hash table is represented as a list of list , the larger list
+has a maximum fixed size ( which is used also for the hashing ) and
+an actual size, the number of elements added until a certain point
+
+Integer hash(T element);
+- function which hashes an element based on the number of slots
+available in the hash table and returns the position the element in
+hashed on within the hash table
+element : the element to be hashed
+
+Pair<Integer,Integer> add(T element)
+- function which adds an element to the hash table if it is not
+already within the hash table. The function checks the existence of
+the element in the table, if it already exists then the position of
+the element is returned, otherwise the element is added on the
+position it is hashed on in the larger list, at the end of the list
+on that specific position.
+element : the element to be added to the hash table
+
+Pair<Integer,Integer> lookup(T element)
+- function which searches for an element in the hash table. The
+function computes the position of the element in the hash table
+using the hash function. If the element given is found in the list
+on that position then its position In the hash table is returned,
+otherwise the function returns null.
+element : the element to be looked up in the hash table
+
+Integer getSize()
+- function which returns the number of elements added to the hash
+table until now
+
+Formatter getTable()
+- function which returns a formatter which arranges the content of the hash table in a table form
+
+Class: PIF
+- class which is responsible for keeping the tokens found by the scanner and their position in the symbols table. ( or -1 if they are not in the symbols table ) The PIF has a list of pairs of the token and its corresponding position.
+
+void add(Pair<String,Object> pair)
+- function which adds a pair of a token and its position to the end of the list
+
+Formatter getTable()
+- function which returns a formatter which arranges the content of the list in a table form
+
+Class: Scanner
+- class which is responsible for parsing a file and extracting the tokens within it, checking for lexical errors. The class has two symbol tables,  one for constants and one for identifiers, a list of tokens with all the reserved words, separators and operators that are read from token.in, a PIF table, in which we add each token and its corresponding position in the symbol table ( or -1 if it is not in the symbols table) and the names of the output filenames ( for PIF and symbol tables ).
+
+int matchTokenList (String line, int index)
+- function which receives a line and an index, the index represents the position from which the given line is a substring of the line read from the file
+- the function tries to match the start of the line to one of the tokens in token.in ( reserved word, separator or operator ) and adds to the current index the length of the token if a match is found
+
+int matchConstant (String line, int index)
+- function which receives a line and an index, the index represents the position from which the given line is a substring of the line read from the file
+- the function tries to match the start of the line with one of the constant regexes : int, bool, char or string and adds to the current index the length of the token if a match is found
+
+int matchIdentifier (String line, int index)
+- function which receives a line and an index, the index represents the position from which the given line is a substring of the line read from the file
+- the function tries to match the start of the line with the identifier regex and adds to the current index the length of the token if a match is found
+
+
+void lookAhead (String fileName)
+- function which receives a filename, reads a program from the respective file, parses all the lines and tries to match the tokens to reserved words, separators, operators, constants or identifiers. The whitespaces are skipped and each time a token is found the index is incremented with the length of the token. If the function cannot find a match in any of the categories the parsing in stopped and the lexical error is displayed. Otherwise, if the program is correct, the content of the PIF and of the Symbol Tables are printed in their corresponding files.
+
+
+

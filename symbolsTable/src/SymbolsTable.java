@@ -1,6 +1,7 @@
 package src;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 public class SymbolsTable<T>{
@@ -16,7 +17,7 @@ public class SymbolsTable<T>{
             this.hashTable.add(new ArrayList<>());
     }
     Integer hash(T element){
-        return element.hashCode() % maximumSize ;
+        return Math.abs(element.hashCode() % maximumSize) ;
     }
     Pair<Integer,Integer> add(T element){
         Pair <Integer,Integer> position = lookup(element);
@@ -42,6 +43,22 @@ public class SymbolsTable<T>{
 
     Integer getSize(){
         return this.size;
+    }
+
+    public Formatter getTable()  {
+        Formatter fmt = new Formatter();
+        int position = 0;
+        int rowNumber = 0;
+        fmt.format("%15s %15s\n", "ST Position", "Symbol");
+        for (List<T> row : hashTable){
+            position = 0;
+            for (T elem : row) {
+                fmt.format("%14s %14s\n", new Pair<Integer,Integer>(rowNumber,position), elem);
+            }
+            rowNumber++;
+        }
+        System.out.println(fmt);
+        return fmt;
     }
 
 }
