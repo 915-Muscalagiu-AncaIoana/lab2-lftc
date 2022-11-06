@@ -1,0 +1,12 @@
+Hash table with separate chaining
+    ST Position          Symbol
+       (67, 0)             $a
+      (164, 0)           $div
+---------------------------------------------
+    ST Position          Symbol
+       (12, 0)           true
+       (39, 0)             10
+       (49, 0)              1
+       (50, 0)              2
+       (58, 0)     "notprime"
+      (108, 0)        "prime"

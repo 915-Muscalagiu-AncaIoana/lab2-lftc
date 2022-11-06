@@ -3,11 +3,11 @@
 * 
 /
 % 
-:= 
-< 
-<= 
-== 
+:=
+<=
+==
 >=
+<
 >
 =
 [ 
@@ -30,7 +30,5 @@ repeat
 stop
 otherwise
 length
-true
-false
 bool
 string

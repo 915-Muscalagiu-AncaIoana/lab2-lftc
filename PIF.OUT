@@ -1,0 +1,42 @@
+          Token     ST position
+          decl             -1
+           int             -1
+            id        (67, 0)
+            :=             -1
+         const        (39, 0)
+             ;             -1
+          decl             -1
+           int             -1
+            id       (164, 0)
+            :=             -1
+         const        (50, 0)
+             ;             -1
+        repeat             -1
+             [             -1
+            id       (164, 0)
+            <=             -1
+            id        (67, 0)
+             ]             -1
+             {             -1
+          cond             -1
+             [             -1
+         const        (12, 0)
+             ]             -1
+             {             -1
+         print             -1
+             [             -1
+         const        (58, 0)
+             ]             -1
+          stop             -1
+             ;             -1
+             }             -1
+            id       (164, 0)
+            :=             -1
+            id       (164, 0)
+             +             -1
+         const        (49, 0)
+             }             -1
+         print             -1
+             [             -1
+         const       (108, 0)
+             ]             -1

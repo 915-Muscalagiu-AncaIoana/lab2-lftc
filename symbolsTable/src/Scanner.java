@@ -23,6 +23,9 @@ public class Scanner {
     String pifOut = "PIF.OUT";
     String symbolsTableOut = "ST.OUT";
 
+    private boolean isLastTokenConstantOrIdentifier = false;
+    private boolean isLastTokenSeparatorOrSpace = true;
+
     public Scanner () {
         Path filePath = Paths.get("symbolsTable/token.in");
         Charset charset = StandardCharsets.UTF_8;
@@ -35,8 +38,18 @@ public class Scanner {
     }
 
     int matchTokenList (String line, int index) {
+        Pattern wordPattern = Pattern.compile("[a-zA-Z]+");
         for (String token : tokens) {
             if (line.indexOf(token) == 0) {
+                if ((token.equals("+") || token.equals("-")) && !isLastTokenConstantOrIdentifier) {
+                    return index;
+                }
+                isLastTokenConstantOrIdentifier = false;
+                if (wordPattern.matcher(token).matches()) {
+                    isLastTokenSeparatorOrSpace = false;
+                } else {
+                    isLastTokenSeparatorOrSpace = true;
+                }
                 pif.add(new Pair<>(token, -1));
                 return index + token.length();
             }
@@ -55,6 +68,7 @@ public class Scanner {
             if (tokenMatcher.find() && tokenMatcher.start() == 0) {
                 String matchedToken = tokenMatcher.group();
                 Pair<Integer, Integer> pair = constantsSymbolsTable.add(matchedToken);
+                isLastTokenConstantOrIdentifier = true;
                 pif.add(new Pair<>("const", pair));
                 return index + matchedToken.length();
             }
@@ -65,8 +79,9 @@ public class Scanner {
     int matchIdentifier (String line, int index) {
         Pattern identifierPattern = Pattern.compile("\\$[a-zA-Z][a-zA-Z0-9]*");
         Matcher tokenMatcher = identifierPattern.matcher(line);
-        if (tokenMatcher.find() && tokenMatcher.start()==0) {
+        if (tokenMatcher.find() && tokenMatcher.start() == 0) {
             String matchedToken = tokenMatcher.group();
+            isLastTokenConstantOrIdentifier = true;
             Pair<Integer, Integer> pair = identifiersSymbolsTable.add(matchedToken);
             pif.add(new Pair<>("id", pair));
             return index + matchedToken.length();
@@ -86,11 +101,14 @@ public class Scanner {
         try {
             List<String> lines = Files.readAllLines(filePath, charset);
             for (String line : lines) {
-                if (!line.isBlank()){
+                isLastTokenSeparatorOrSpace = true;
+                if (!line.isBlank()) {
                     index = 0;
+                    isLastTokenSeparatorOrSpace = true;
                     while (index < line.length()) {
                         if (line.charAt(index) == ' ') {
                             index++;
+                            isLastTokenSeparatorOrSpace = true;
                             continue;
                         }
                         int newIndex = matchTokenList(line.substring(index), index);
@@ -98,18 +116,22 @@ public class Scanner {
                             index = newIndex;
                             continue;
                         }
-                        newIndex = matchConstant(line.substring(index), index);
-                        if (newIndex != index) {
-                            index = newIndex;
-                            continue;
-                        }
-                        newIndex = matchIdentifier(line.substring(index), index);
-                        if (newIndex != index) {
-                            index = newIndex;
-                            continue;
+                        if (isLastTokenSeparatorOrSpace) {
+                            newIndex = matchConstant(line.substring(index), index);
+                            if (newIndex != index) {
+                                index = newIndex;
+                                isLastTokenSeparatorOrSpace = false;
+                                continue;
+                            }
+                            newIndex = matchIdentifier(line.substring(index), index);
+                            if (newIndex != index) {
+                                index = newIndex;
+                                isLastTokenSeparatorOrSpace = false;
+                                continue;
+                            }
                         }
 
-                        errors += ("lexical error, line: " + nrline + ", index: " + index +", token: "+line.substring(index));
+                        errors += ("lexical error, line: " + nrline + ", index: " + index + ", token: " + line.substring(index));
                         errors += '\n';
                         flagIsCorrect = false;
                         break;
