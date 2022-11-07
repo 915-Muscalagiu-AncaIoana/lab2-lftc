@@ -71,5 +71,19 @@ int matchIdentifier (String line, int index)
 void lookAhead (String fileName)
 - function which receives a filename, reads a program from the respective file, parses all the lines and tries to match the tokens to reserved words, separators, operators, constants or identifiers. The whitespaces are skipped and each time a token is found the index is incremented with the length of the token. If the function cannot find a match in any of the categories the parsing in stopped and the lexical error is displayed. Otherwise, if the program is correct, the content of the PIF and of the Symbol Tables are printed in their corresponding files.
 
+Regexes used:
+- [a-zA-Z]+ => used to match in the tokens from token.in the reserved words
+            => match all words with one or more letters
+- ^0|([+-])?[1-9]([0-9])* => used to match integer constants
+			  => match 0 or number that starts with 1...9 followed by any number of digits from 0 to 9 having a sign of + or - ( signed numbers ) or having no sign ( unsigned )
+- ^'[a-zA-Z0-9]' => used to match char constants
+		 => match any character ( letter or digit ) between ''
+- ^"([a-zA-Z0-9])*" => used to match string constants 
+		    => match zero or more letters or digits between "" ( covers also empty string )
+- ^true|false => used to match bool constants
+	      => match true or false sequence
+
+- \\$[a-zA-Z][a-zA-Z0-9]*" => used to match identifiers
+			   => match identifier of the form : $, followed by a letter and a sequence of zero or more letters of digits
 
 
