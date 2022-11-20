@@ -18,6 +18,11 @@ public class Scanner {
     SymbolsTable<String> identifiersSymbolsTable = new SymbolsTable<>(191);
     List<String> tokens = new ArrayList<>();
 
+    List<String> separators = new ArrayList<>();
+
+    FiniteAutomata finiteAutomataInt = new FiniteAutomata();
+    FiniteAutomata finiteAutomataId = new FiniteAutomata();
+
     PIF pif = new PIF();
 
     String pifOut = "PIF.OUT";
@@ -26,12 +31,33 @@ public class Scanner {
     private boolean isLastTokenConstantOrIdentifier = false;
     private boolean isLastTokenSeparatorOrSpace = true;
 
+    int getNextSeparatorIndex (String line) {
+        int nextIndex = line.length();
+        for (String separator : separators) {
+            {
+                int separatorIndex = line.indexOf(separator);
+                if (separatorIndex != -1 && separatorIndex < nextIndex && separatorIndex!= 0) {
+                    nextIndex = separatorIndex;
+                }
+            }
+        }
+        return nextIndex;
+    }
+
     public Scanner () {
         Path filePath = Paths.get("symbolsTable/token.in");
         Charset charset = StandardCharsets.UTF_8;
         try {
             List<String> lines = Files.readAllLines(filePath, charset);
             tokens.addAll(lines.stream().map(String::strip).toList());
+            for (String token : tokens) {
+                Pattern wordPattern = Pattern.compile("[a-zA-Z]+");
+                if (!wordPattern.matcher(token).matches()) {
+                    separators.add(token);
+                }
+            }
+            separators.add(" ");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,11 +84,11 @@ public class Scanner {
     }
 
     int matchConstant (String line, int index) {
-        Pattern intPattern = Pattern.compile("^0|([+-])?[1-9]([0-9])*");//. represents single character
+        //Pattern intPattern = Pattern.compile("^0|([+-])?[1-9]([0-9])*");//
         Pattern charPattern = Pattern.compile("^'[a-zA-Z0-9]'");
         Pattern stringPattern = Pattern.compile("^\"([a-zA-Z0-9])*\"");
         Pattern boolPattern = Pattern.compile("^true|false");
-        List<Pattern> patterns = Arrays.asList(intPattern, charPattern, stringPattern, boolPattern);
+        List<Pattern> patterns = Arrays.asList(charPattern, stringPattern, boolPattern);
         for (Pattern pattern : patterns) {
             Matcher tokenMatcher = pattern.matcher(line);
             if (tokenMatcher.find() && tokenMatcher.start() == 0) {
@@ -73,18 +99,25 @@ public class Scanner {
                 return index + matchedToken.length();
             }
         }
+        int nextSeparatorIndex = getNextSeparatorIndex(line);
+        String sequence = line.substring(0, nextSeparatorIndex);
+        if (finiteAutomataInt.isSequenceAccepted(sequence.split(""))) {
+            Pair<Integer, Integer> pair = constantsSymbolsTable.add(sequence);
+            isLastTokenConstantOrIdentifier = true;
+            pif.add(new Pair<>("const", pair));
+            return index + sequence.length();
+        }
         return index;
     }
 
     int matchIdentifier (String line, int index) {
-        Pattern identifierPattern = Pattern.compile("\\$[a-zA-Z][a-zA-Z0-9]*");
-        Matcher tokenMatcher = identifierPattern.matcher(line);
-        if (tokenMatcher.find() && tokenMatcher.start() == 0) {
-            String matchedToken = tokenMatcher.group();
+        int nextSeparatorIndex = getNextSeparatorIndex(line);
+        String sequence = line.substring(0, nextSeparatorIndex);
+        if (finiteAutomataId.isSequenceAccepted(sequence.split(""))) {
             isLastTokenConstantOrIdentifier = true;
-            Pair<Integer, Integer> pair = identifiersSymbolsTable.add(matchedToken);
+            Pair<Integer, Integer> pair = identifiersSymbolsTable.add(sequence);
             pif.add(new Pair<>("id", pair));
-            return index + matchedToken.length();
+            return index + sequence.length();
         }
         return index;
     }
@@ -96,6 +129,8 @@ public class Scanner {
         String errors = "";
         int nrline = 0;
         int index = 0;
+        finiteAutomataInt.parseInputFile("FA-int.in");
+        finiteAutomataId.parseInputFile("FA-id.in");
 
 
         try {
